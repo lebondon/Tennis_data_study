@@ -1,0 +1,183 @@
+SQL CHEATSHEET
+
+mockaroo to generate mock datasets
+
+\pset pager off		remove --more--
+
+\! cls			clear the terminal
+
+<>		not equal
+
+code 0 1 means we have affected one row 
+
+LIMIT 10; 	only print the first 10 records
+
+OFFSET 10	start printing the record skipping the first 10, can be used together with LIMIT	
+
+OFFSET 10 LIMIT 10 	prints the records 11-20
+
+FETCH 		similar to limit but a bit more verbose, look further.
+
+
+WHERE country_of_birth IN ('Spain','Mexico','China')		IN can be used to create a filter
+
+
+BETWEEN 0 AND 2
+
+
+SELECT * FROM person WHERE email LIKE '%.com' 	
+
+we are specifying the pattern here where % means "every character" and %.com means "every character followed by .com
+'%google.%' would mean "every string that has google. inside
+
+% is called a wildcard
+
+'____@%'	find me all emails that have 4 characters before the @,
+		underscore in this case is used as indicator of characters
+
+
+ILIKE 		has the same function but it's not case sensitive so:
+		SELECT * WHERE country_of_birth ILIKE 'p%' would return also the countries that start with P like Portugal
+
+
+
+SELECT country_of_birth COUNT(*) FROM person GROUP BY country_of_birth;		print the number of how many peoples per country, can also put a "order by" in front
+
+The COUNT() function returns the number of rows that matches a specified criterion, if you write the name of a column inside instead of * it ignores the null values
+
+using it with the WHERE function print out the total number of records that respect that clause 
+
+SELECT country_of_birth COUNT(*) FROM person GROUP BY country_of_birth HAVING COUNT(*)>5 ORDER BY country_of_birth;
+
+we can also use HAVING to put another filter over the groupby by explicitating to only print values that have more than 5 
+
+
+SELECT MAX(price) FROM cars;		print out the highest price found in the table
+there is also MIN AND AVG which does as specified
+
+
+SELECT ROUND(AVG(price)) FROM cars		round the decimals and gives back an int	ROUND(AVG(price),2)		rounds to two decimals
+
+
+SELECT maker, AVG(price) GROUP BY maker		gives back the average price based on every car maker 
+
+
+SELECT SUM(price) FROM cars		sum of all prices in the table
+
+
+you can also use arythmetic operators like +, -, *, /, %(gives back the remainder of a division), !(factorial)
+
+ex: SELECT 10+2		-> 		12
+
+
+SELECT id, make, model, (price * .10 ) FROM cars		creates another column with price of each row multiplied per 0.10, you can also round that.
+the name of the new column will be ?column? in this case or round if we use the round function since as placeholder name it uses the function used to create it.
+
+you can use the AS keyword to change the column name:
+
+SELECT id, make, price AS original_price, (price *.10) AS discount FROM cars;
+
+
+if we have a column with null values that we want to fill with certain default values we can use COALESCE
+
+SELECT COALESCE(email, 'Email not given')	will fill all the null values of the email column with that string of characters,
+
+COALESCE can have multiple values to be put by default for example if the first is not found it will pass to the next one COALESCE(email, null, 2)
+
+
+if we are dealing for example with operations that may cause errors (like dividing by 0), we can use NULLIF
+
+NULLIF()	return null if the first argument is equal to the second one
+NULLIF(10,10)	->null
+NULLIF(1-10)	->null
+
+SELECT 10/null in postgres return null and not an error!
+
+SELECT 10/NULLIF(0,0)	->null
+SELECT COALESCE(10/NULLIF(0,0),0)	->null
+
+
+SELECT NOW()		return the timestamp of the current time
+
+SELECT NOW()::DATE 		we are casting the timestamp to a date format		(:: is casting)
+
+SELECT NOW()::TIME 		we are casting the timestamp to only time (keeps hours, minutes, seconds and milliseconds)
+
+
+we can also do operations with dates like:
+
+SELECT NOW() - INTERVAL '1 YEAR';		sottrae un anno al timestamp corrente
+SELECT NOW() - INTERVAL '10 MONTHS';	sottrae 10 mesi al timestamp corrente
+
+and cast it to dates	SELECT (NOW() - INTERVAL '10 MONTHS')::DATE
+
+
+we can also extract the various part of a timestamp with EXTRACT:
+
+SELECT EXTRACT(YEAR FROM NOW());	
+SELECT EXTRACT(MONTH FROM NOW())		there are various keywords that we can use
+ecc. ecc.
+
+
+we can use the AGE() function to calculate age dinamically based on DOB and now():
+
+SELECT id,name,surname, date_of_birth, AGE(NOW(),date_of_birth) FROM person;	as output it will give back the subtraction between NOW() and date_of_birth (not in timestamp format!)
+
+
+we can add and remove the primary key constraint so that an error won't be thrown when we insert the same value as primary key.
+
+removing:	ALTER TABLE person DROP CONSTRAINT ...		placeholder 
+
+adding:		ALTER TABLE person ADD PRIMARY KEY(id);		we can add more than one argument in the parenthesis and have more than one primary key
+
+
+
+we can add constraints to the tables like making so a certain column can only have unique values, ex:emails;
+
+ALTER TABLE person ADD CONSTRAINT unique_email_address UNIQUE (email)		we can have more than one argument in the parenthesis so that more than one column will have that constraint
+
+
+we can also add constraints where a column can only have a certain set of values:
+
+ALTER TABLE person ADD CONSTRAINT gender_constraint CHECK(gender=='Female' OR gender=='Male);
+
+
+DELETE FROM person WHERE id=1011;		delete a record from the table
+
+DELETE FROM person;		delete the entire table
+
+
+UPDATE person SET name = 'Pinco' WHERE id=200		updating records in the table, you can choose more values to update and can omit the where clause to selecy the whole table
+
+
+ON CONFLICT(column) DO NOTHING;		to ignore the constraints for that specific column so that postgres doesn't give back an error when you execute an operation es:
+
+INSERT INTO person(id,name) VALUES(1,'Gianni)		nella tabella abbiamo un id Big serial e chiave primaria che che quindi deve essere univoca e quando
+ON CONFLICT DO NOTHING;													eseguiremo questa operazione non ritornerà un errore ma la nostra query non avrà effetto, funziona anche con constraint tipo unique
+													ritornerà codice 0 0 che significa nessun effetto
+
+
+you can also deal with conflict by updating certain values by the new ones inserted:
+
+INSERT INTO person(id,name,surname) VALUES(1,'Gianni','Chiarugolo')
+ON CONFLICT DO UPDATE SET name=EXCLUDED.name, surname=EXCLUDED.surname;			tramite questo codice gli stiamo dicendo di modificare i valori di name e surname con quelli in entrata.
+																				potevamo scegliere anche solo name o surname
+
+
+adding a foreign key that reference another column_id:
+
+CREATE TABLE car(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	model VARCHAR(50)							
+)
+
+CREATE TABLE user(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name VARCHAR(50),
+	car_id BIGINT REFERENCES car (id),			we are creating a car_id column that is a foreign key to the primary key in the car table 	
+	UNIQUE(car_id)
+)
+
+
+
+
