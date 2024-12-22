@@ -180,4 +180,7 @@ CREATE TABLE user(
 
 
 
+saving a file to csv:
 
+\copy (SELECT * FROM person LEFT JOIN car on car.id = person.car_id)
+		to /ex/ex/desktop/result.csv DELIMITER ',' CSV HEADER

@@ -1,3 +1,10 @@
 dopo il 1990 le partite atp singles hanno più dati(anche se alcuni ancora mancanti a volte)
 prova
 
+controlla i missing nella tabella dei ranking, ce ne sono attorno ai 375000 e principalmente dovrebbero essere localizzati negli anni più arretrati
+
+wta non ha la tabella amateurs
+
+wta non ha le tabelle qual_chall ma al suo posto ha qual_itf
+
+i ranking della wta hanno una colonna in più "tours" guardare cosa significa
