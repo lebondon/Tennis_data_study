@@ -9,7 +9,21 @@ wta non ha le tabelle qual_chall ma al suo posto ha qual_itf
 
 i ranking della wta hanno una colonna in più "tours" guardare cosa significa
 
+controllo dei missing:
+value count sulle categoriche
+controllo dei nan
+eventuale eliminazione dei giocatori con troppi nan
+
+eda:
+confronto tra chi vince di più tra chi gioca con la mano destra e chi con la mano sinistra + considerazioni
+pairplot sulle colonne winning
+punteggio più alto per anno (con filtro sugli anni)
+controllo del renk del giocatore nel corso degli anni
+confronto tra il numero delle vittorie e il numero di sconfitte 
+
+idee dasbord:
+-incentrare la presentazione su un singolo giocatore
+-concentrasi su un torneo, con un filtro per cambiare il torneo
 
 
-
-speriamo funzioni
+tabella a parte con primary key con id del torneo
