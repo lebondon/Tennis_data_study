@@ -27,3 +27,13 @@ idee dasbord:
 
 
 tabella a parte con primary key con id del torneo
+
+considerazioni Simone:
+    -nel mentre che provavo a controllare i valori NaN all'interno dei file parquet ho trovato che all'interno 
+     della colonna "draw_size" è presente uno strano valore "R" come ho segnato nel file controllo_nan_atp.ipynb 
+     presente nella cartella aggregated_matches_atp
+    -nello stesso file dell'appunto sopra ho notato che nella colonna "tourney_level"
+     sono presenti solo due tipi di valori (so che magari questo appunto può sembrare inutile ma mi incuriosiva la cosa)
+    - nella colonna "winner_age" della stessa tabella sopra inficata i valori sono segnati anche con valori decimali (es:23.876797)
+      eventualmente ha senso fare una funzione che mi permetta di arrotondare i valori alle prime due cifre? nel caso lo rirenete necessario ho la sciato commentato il codice che dovrebbe poter risolvere il "problema"
+    
