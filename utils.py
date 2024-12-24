@@ -1,9 +1,10 @@
 import os
 import polars as pl
+from sqlalchemy import create_engine
 
 def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="singles",gender="atp",write_parquet=False):
     dataframes = []
-    null_values = ['NA', 'N/A', '', '-', 'Unknown', 'null']
+    null_values = ['NA', 'N/A', '', '-', 'Unknown', 'null','�']
    
     # Define file prefixes for different match types
     match_types = {
@@ -19,7 +20,8 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
         "singles": (1968, 2025),
         "doubles": (1968, 2025),
         "qualifiers_challengers": (1978, 2025),
-        "futures": (1991, 2025)
+        "futures": (1991, 2025),
+        "qualifiers_itf": (1968, 2025),
     }
     
     if gender=="wta":
@@ -38,26 +40,47 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
             try:
                     # Expanded schema overrides to preserve string types
                 schema_overrides = {
-                    'winner_seed': pl.Utf8,
-                    'loser_seed': pl.Utf8,
-                    'tourney_date': pl.Utf8,
-                    'winner_entry': pl.Utf8,
-                    'loser_entry': pl.Utf8,
-                    'winner_rank': pl.Utf8,
-                    'loser_rank': pl.Utf8,
-                    'winner1_id': pl.Utf8,
-                    'winner2_id': pl.Utf8,
-                    'loser1_id': pl.Utf8,
-                    'loser2_id': pl.Utf8
-                }
+                                    'tourney': pl.Utf8,
+                                    'winner_seed': pl.Utf8,
+                                    'winner_entry': pl.Utf8,
+                                    'loser_seed': pl.Utf8,
+                                    'loser_entry': pl.Utf8,
+                                    'winner_rank': pl.Utf8,
+                                    'winner_rank_points': pl.Utf8,
+                                    'loser_rank': pl.Utf8,
+                                    'loser_rank_points': pl.Utf8,
+                                    'tourney_date': pl.Utf8,
+                                    # Handle both singles and doubles ID fields
+                                    'winner_id': pl.Utf8,
+                                    'winner1_id': pl.Utf8,
+                                    'winner2_id': pl.Utf8,
+                                    'loser_id': pl.Utf8,
+                                    'loser1_id': pl.Utf8,
+                                    'loser2_id': pl.Utf8,
+                                    # Handle both singles and doubles name fields
+                                    'winner_name': pl.Utf8,
+                                    'winner1_name': pl.Utf8,
+                                    'winner2_name': pl.Utf8,
+                                    'loser_name': pl.Utf8,
+                                    'loser1_name': pl.Utf8,
+                                    'loser2_name': pl.Utf8,
+                                    # Handle both singles and doubles hand fields
+                                    'winner_hand': pl.Utf8,
+                                    'winner1_hand': pl.Utf8,
+                                    'winner2_hand': pl.Utf8,
+                                    'loser_hand': pl.Utf8,
+                                    'loser1_hand': pl.Utf8,
+                                    'loser2_hand': pl.Utf8
+                                    }
                    
                 df = pl.read_csv(
                                 filepath,
                                 schema_overrides=schema_overrides,
                                 ignore_errors=False,
                                 null_values=null_values,
-                                infer_schema_length=10000,
-                                try_parse_dates=True
+                                infer_schema_length=50000,
+                                try_parse_dates=True,
+                                truncate_ragged_lines=True
                                 )
                    
                     # Convert tourney_date to Date type
@@ -75,7 +98,7 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
     # Vertical concat with relaxed schema
     matches=pl.concat(dataframes, how="vertical_relaxed")
     if write_parquet==True:
-        matches.write_parquet(file=f"aggregated_matches_{gender}/{data_type}_matches.parquet",compression="zstd")
+        matches.write_parquet(file=f"aggregated_matches_{gender}/{gender}_{data_type}_matches.parquet",compression="zstd")
     return matches
 
 
@@ -191,3 +214,34 @@ def import_rankings(base_path="matches_and_ranking_atp",gender="atp",write_parqu
         rankings.write_parquet(file=f"aggregated_matches_{gender}/{gender}_rankings.parquet",compression="zstd")
     return rankings
 
+
+def load_parquets_to_postgres():
+    tables_names_atp=["atp_singles_matches","atp_doubles_matches","atp_amateurs_matches","atp_futures_matches","atp_qualifiers_challengers_matches","atp_rankings","atp_players"]
+    tables_names_wta=["wta_singles_matches","wta_players","wta_rankings","wta_qualifiers_itf_matches"]
+    
+    engine = create_engine('postgresql://postgres:don@localhost:5432/tennis_stats')
+    
+    base_path="aggregated_matches_atp"
+    
+    for table in tables_names_atp:
+        filename = table+".parquet"
+        filepath = os.path.join(base_path, filename)
+        df=pl.read_parquet(filepath)
+        df.write_database(
+                           table,
+                           connection=engine,
+                           if_table_exists="replace"
+                         )
+    
+    base_path="aggregated_matches_wta"
+    
+    for table in tables_names_wta:
+        filename = table+".parquet"
+        filepath = os.path.join(base_path, filename)
+        df=pl.read_parquet(filepath)
+        df.write_database(
+                           table,
+                           connection=engine,
+                           if_table_exists="replace"
+                         )       
+        
