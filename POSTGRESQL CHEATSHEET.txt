@@ -6,6 +6,8 @@ mockaroo to generate mock datasets
 
 \! cls			clear the terminal
 
+\x 		when you have a lot of features to see use the expanded display
+
 <>		not equal
 
 code 0 1 means we have affected one row 

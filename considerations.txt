@@ -11,5 +11,19 @@ i ranking della wta hanno una colonna in più "tours" guardare cosa significa
 
 
 
+errori:
+
+Error importing wta_matches_qual_itf_2015.csv: could not parse `�` as dtype `str` at column 'score' (column number 24)
+
+The current offset in the file is 3500749 bytes.
+
+You might want to try:
+- increasing `infer_schema_length` (e.g. `infer_schema_length=10000`),
+- specifying correct dtype with the `dtypes` argument
+- setting `ignore_errors` to `True`,
+- adding `�` to the `null_values` list.
+
+Original error: ```invalid utf-8 sequence```
+
 
 speriamo funzioni
