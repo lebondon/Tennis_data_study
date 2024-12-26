@@ -36,4 +36,5 @@ considerazioni Simone:
      sono presenti solo due tipi di valori (so che magari questo appunto può sembrare inutile ma mi incuriosiva la cosa)
     - nella colonna "winner_age" della stessa tabella sopra inficata i valori sono segnati anche con valori decimali (es:23.876797)
       eventualmente ha senso fare una funzione che mi permetta di arrotondare i valori alle prime due cifre? nel caso lo rirenete necessario ho la sciato commentato il codice che dovrebbe poter risolvere il "problema"
+    - nel mentre che stavo facendo il controllo dei valori nan nella terza tabella (da me rinominata df3) ho notato che nelle colonne **_ranking_points sono presenti dei valori zerro, como ho fatto notare nei commenti del file
     
