@@ -26,7 +26,24 @@ idee dasbord:
 -concentrasi su un torneo, con un filtro per cambiare il torneo
 
 
+<<<<<<< HEAD
 tabella a parte con primary key con id del torneo
+=======
+errori:
+
+Error importing wta_matches_qual_itf_2015.csv: could not parse `�` as dtype `str` at column 'score' (column number 24)
+
+The current offset in the file is 3500749 bytes.
+
+You might want to try:
+- increasing `infer_schema_length` (e.g. `infer_schema_length=10000`),
+- specifying correct dtype with the `dtypes` argument
+- setting `ignore_errors` to `True`,
+- adding `�` to the `null_values` list.
+
+Original error: ```invalid utf-8 sequence```
+
+>>>>>>> 5b663fede68e0e26098c9eb268306d347273adeb
 
 considerazioni Simone:
     -nel mentre che provavo a controllare i valori NaN all'interno dei file parquet ho trovato che all'interno 
