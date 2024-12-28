@@ -27,3 +27,9 @@ Original error: ```invalid utf-8 sequence```
 
 
 speriamo funzioni
+
+Considerazioni davide: abbiamo creato i df tornei, per creare un valore unico abbiamo fatto una unique sulle date,
+non è un modo molto pulito ma era lunico modo che ci era venuto in mente (anche perche farlo sui luoghi era insensato),
+se avete qulche consiglio siamo aperti a suggerimenti
+
+creare una colonna con turney name e date (se funziona sara la prossima turney_id) con un concat semplice
