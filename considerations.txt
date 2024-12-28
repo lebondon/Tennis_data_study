@@ -33,3 +33,4 @@ non è un modo molto pulito ma era lunico modo che ci era venuto in mente (anche
 se avete qulche consiglio siamo aperti a suggerimenti
 
 creare una colonna con turney name e date (se funziona sara la prossima turney_id) con un concat semplice
+Controllare i valori M allinizio di tourney name in match futures
