@@ -8,6 +8,8 @@ mockaroo to generate mock datasets
 
 \x 		when you have a lot of features to see use the expanded display
 
+sudo power off		to close ubuntu server
+
 <>		not equal
 
 code 0 1 means we have affected one row 
