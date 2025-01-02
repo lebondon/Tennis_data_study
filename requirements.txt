@@ -1,3 +1,0 @@
-polars
-sqlalchemy3
-psycopg2
