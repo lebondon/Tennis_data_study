@@ -1,6 +1,11 @@
 import os
 import polars as pl
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="singles",gender="atp",write_parquet=False):
     dataframes = []
@@ -215,7 +220,7 @@ def import_rankings(base_path="matches_and_ranking_atp",gender="atp",write_parqu
     return rankings
 
 
-def load_parquets_to_postgres():
+def load_parquets_to_postgres_local():
     tables_names_atp=["atp_singles_matches","atp_doubles_matches","atp_amateurs_matches","atp_futures_matches","atp_qualifiers_challengers_matches","atp_rankings","atp_players"]
     tables_names_wta=["wta_singles_matches","wta_players","wta_rankings","wta_qualifiers_itf_matches"]
     
@@ -243,5 +248,34 @@ def load_parquets_to_postgres():
                            table,
                            connection=engine,
                            if_table_exists="replace"
-                         )       
+                         )
         
+        
+        
+def load_parquet_to_supabase(parquet_file: str, table_name: str):
+    try:
+        if not DATABASE_URL:
+            raise ValueError("Database URL not found in environment variables")
+            
+        engine = create_engine(DATABASE_URL)
+        
+        df = pl.read_parquet(parquet_file)
+        
+        print(f"Uploading to table {table_name}...")
+        # Convert to pandas and upload
+        df = df.to_pandas()
+        df.to_sql(
+            table_name,
+            engine,
+            if_exists='replace',
+            index=False,
+            chunksize=50000
+        )
+        
+        print(f"Successfully loaded {len(df)} rows into {table_name}")
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+    finally:
+        if 'engine' in locals():
+            engine.dispose()
