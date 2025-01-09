@@ -43,7 +43,6 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
            
         if os.path.exists(filepath):
             try:
-                    # Expanded schema overrides to preserve string types
                 schema_overrides = {
                                     'tourney': pl.Utf8,
                                     'winner_seed': pl.Utf8,
@@ -55,21 +54,18 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
                                     'loser_rank': pl.Utf8,
                                     'loser_rank_points': pl.Utf8,
                                     'tourney_date': pl.Utf8,
-                                    # Handle both singles and doubles ID fields
                                     'winner_id': pl.Utf8,
                                     'winner1_id': pl.Utf8,
                                     'winner2_id': pl.Utf8,
                                     'loser_id': pl.Utf8,
                                     'loser1_id': pl.Utf8,
                                     'loser2_id': pl.Utf8,
-                                    # Handle both singles and doubles name fields
                                     'winner_name': pl.Utf8,
                                     'winner1_name': pl.Utf8,
                                     'winner2_name': pl.Utf8,
                                     'loser_name': pl.Utf8,
                                     'loser1_name': pl.Utf8,
                                     'loser2_name': pl.Utf8,
-                                    # Handle both singles and doubles hand fields
                                     'winner_hand': pl.Utf8,
                                     'winner1_hand': pl.Utf8,
                                     'winner2_hand': pl.Utf8,
@@ -94,9 +90,20 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
                                     .str.to_date(format='%Y%m%d')
                                     .alias('tourney_date')
                                     )
+                
+                df = df.drop("tourney_id")
+                
                 df = df.with_columns(
-                    pl.col('tourney_id').str.concat("_additional_text")
+                (pl.col("tourney_name") + "_" + pl.col("tourney_date").dt.year().cast(pl.Utf8)+f"_{prefix}_{gender}").alias("tourney_id")
                 )
+                
+                if prefix=="doubles":
+                    df = df.drop(["tourney_name","surface","draw_size","tourney_level","tourney_date","winner1_name","winner1_hand","winner1_ht",
+                                  "winner1_ioc","winner1_age","winner2_name","winner2_hand","winner2_ht","winner2_ioc","winner2_age","loser1_name",
+                                  "loser2_hand","loser2_ht","loser2_ioc","loser2_name","loser2_hand","loser2_ht","loser2_ioc"])
+                    
+                else:                
+                    df = df.drop(["tourney_name","surface","draw_size","tourney_level","tourney_date","winner_name","winner_hand","winner_ht","winner_ioc","winner_age","loser_name","loser_hand","loser_ht","loser_ioc"])
                 
                 dataframes.append(df)
                 
