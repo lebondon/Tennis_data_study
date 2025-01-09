@@ -94,6 +94,9 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
                                     .str.to_date(format='%Y%m%d')
                                     .alias('tourney_date')
                                     )
+                df = df.with_columns(
+                    pl.col('tourney_id').str.concat("_additional_text")
+                )
                 
                 dataframes.append(df)
                 
