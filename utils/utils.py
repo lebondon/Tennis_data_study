@@ -94,16 +94,17 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
                 df = df.drop("tourney_id")
                 
                 df = df.with_columns(
-                (pl.col("tourney_name") + "_" + pl.col("tourney_date").dt.year().cast(pl.Utf8)+f"_{prefix}_{gender}").alias("tourney_id")
+                (pl.col("tourney_name") + "_" + pl.col("tourney_date").dt.year().cast(pl.Utf8)+f"_{prefix}").alias("tourney_id")
                 )
                 
                 if prefix=="doubles":
                     df = df.drop(["tourney_name","surface","draw_size","tourney_level","tourney_date","winner1_name","winner1_hand","winner1_ht",
-                                  "winner1_ioc","winner1_age","winner2_name","winner2_hand","winner2_ht","winner2_ioc","winner2_age","loser1_name",
-                                  "loser2_hand","loser2_ht","loser2_ioc","loser2_name","loser2_hand","loser2_ht","loser2_ioc"])
+                                  "winner1_ioc","winner2_name","winner2_hand","winner2_ht","winner2_ioc","winner2_age","loser1_name",
+                                  "loser2_hand","loser2_ht","loser2_ioc","loser2_name","loser2_hand","loser2_ht","loser2_ioc",'best_of'])
                     
                 else:                
-                    df = df.drop(["tourney_name","surface","draw_size","tourney_level","tourney_date","winner_name","winner_hand","winner_ht","winner_ioc","winner_age","loser_name","loser_hand","loser_ht","loser_ioc"])
+                    df = df.drop(["tourney_name","surface","draw_size","tourney_level","tourney_date","winner_name","winner_hand","winner_ht",
+                                  "winner_ioc","loser_name","loser_hand","loser_ht","loser_ioc","best_of"])
                 
                 dataframes.append(df)
                 
@@ -170,6 +171,11 @@ def import_matches_amateurs_atp(base_path="matches_and_ranking_atp",write_parque
                     .str.to_date(format='%Y%m%d')
                     .alias('tourney_date')
                     )
+    
+    amateur_matches = amateur_matches.with_columns(
+                        (pl.col("tourney_name") + "_" + pl.col("tourney_date").dt.year().cast(pl.Utf8)+f"_amateurs_atp").alias("tourney_id")
+                        )
+    amateur_matches = amateur_matches.drop(["tourney_name","surface","draw_size","tourney_level","tourney_date","winner_name","winner_hand","winner_ht","winner_ioc","loser_name","loser_hand","loser_ht","loser_ioc"])
     
     if write_parquet==True:
         amateur_matches.write_parquet(file='aggregated_matches_atp/atp_amateurs_matches.parquet',compression="zstd") 

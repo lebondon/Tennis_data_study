@@ -21,7 +21,11 @@ from utils.utils import *
 
 #wta
 
-#load_parquet_to_supabase('aggregated_matches_wta/wta_players.parquet', 'wta_players')
 #load_parquet_to_supabase('aggregated_matches_wta/wta_qualifiers_itf_matches.parquet', 'wta_qual_itf_matches')
 #load_parquet_to_supabase('aggregated_matches_wta/wta_rankings.parquet', 'wta_rankings')
+#load_parquet_to_supabase('aggregated_matches_wta/wta_players.parquet', 'wta_players')
 #load_parquet_to_supabase('aggregated_matches_wta/wta_singles_matches.parquet', 'wta_singles_matches')
+
+#local
+
+load_parquets_to_postgres_local()
