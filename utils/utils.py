@@ -94,7 +94,7 @@ def import_tennis_matches(base_path="matches_and_ranking_atp", data_type="single
                 df = df.drop("tourney_id")
                 
                 df = df.with_columns(
-                (pl.col("tourney_name") + "_" + pl.col("tourney_date").dt.year().cast(pl.Utf8)+f"_{prefix}").alias("tourney_id")
+                (pl.col("tourney_name") + "_" + pl.col("tourney_date").dt.year().cast(pl.Utf8)+f"_{data_type}"+f"_{gender}").alias("tourney_id")
                 )
                 
                 if prefix=="doubles":
