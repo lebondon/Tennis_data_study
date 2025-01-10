@@ -1,0 +1,6 @@
+to use pytest simply call the command "pytest" in the directory where you keep your test folder.
+
+pytest search all the directories that contain the name test and will look for all the files with a specific notation:
+they need to have in their name "test_" or "_test.py" es: "test_example.py"
+
+the assert command is used to determine wether a statement is true or false, if the statement is true then the test passes else it fails
