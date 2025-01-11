@@ -242,6 +242,13 @@ def import_rankings(base_path="matches_and_ranking_atp",gender="atp",write_parqu
                     print(f"Error importing {filename}: {e}")
                     
         rankings=pl.concat(dataframes, how="vertical_relaxed")
+        
+        rankings = rankings.with_columns([
+        pl.concat_str([
+            pl.col("ranking_date").cast(pl.Utf8),
+            pl.col("rank").cast(pl.Utf8),
+            pl.col("player")], separator="_").alias("ranking_id")            
+                    ])
     if write_parquet==True:
         rankings.write_parquet(file=f"aggregated_matches_{gender}/{gender}_rankings.parquet",compression="zstd")
     return rankings
@@ -250,6 +257,7 @@ def import_rankings(base_path="matches_and_ranking_atp",gender="atp",write_parqu
 def load_parquets_to_postgres_local():
     tables_names_atp=["atp_singles_matches","atp_doubles_matches","atp_amateurs_matches","atp_futures_matches","atp_qualifiers_challengers_matches","atp_rankings","atp_players"]
     tables_names_wta=["wta_singles_matches","wta_players","wta_rankings","wta_qualifiers_itf_matches"]
+    tables_names_utils=["countries","temporal_table","total_tourneys"]
     
     engine = create_engine('postgresql://postgres:don@localhost:5432/tennis_stats')
     
@@ -276,6 +284,18 @@ def load_parquets_to_postgres_local():
                            connection=engine,
                            if_table_exists="replace"
                          )
+        
+    base_path="total_temporal_geografic_table"
+    
+    for table in tables_names_utils:
+        filename = table+".parquet"
+        filepath = os.path.join(base_path, filename)
+        df=pl.read_parquet(filepath)
+        df.write_database(
+                        table,
+                        connection=engine,
+                        if_table_exists="replace"
+                        )
         
         
         
