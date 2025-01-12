@@ -12,20 +12,19 @@ from utils.utils import *
 #atp
 
 #load_parquet_to_supabase('aggregated_matches_atp/atp_players.parquet', 'atp_players')
-load_parquet_to_supabase('aggregated_matches_atp/atp_singles_matches.parquet', 'atp_singles_matches')
+#load_parquet_to_supabase('aggregated_matches_atp/atp_singles_matches.parquet', 'atp_singles_matches')
 #load_parquet_to_supabase('aggregated_matches_atp/atp_rankings.parquet', 'atp_rankings')
-load_parquet_to_supabase('aggregated_matches_atp/atp_qualifiers_challengers_matches.parquet', 'atp_qual_chall_matches')
-load_parquet_to_supabase('aggregated_matches_atp/atp_futures_matches.parquet', 'atp_futures_matches')
-load_parquet_to_supabase('aggregated_matches_atp/atp_doubles_matches.parquet', 'atp_doubles_matches')
-load_parquet_to_supabase('aggregated_matches_atp/atp_amateurs_matches.parquet', 'atp_amateurs_matches')
+#load_parquet_to_supabase('aggregated_matches_atp/atp_qualifiers_challengers_matches.parquet', 'atp_qual_chall_matches')
+#load_parquet_to_supabase('aggregated_matches_atp/atp_futures_matches.parquet', 'atp_futures_matches')
+#load_parquet_to_supabase('aggregated_matches_atp/atp_doubles_matches.parquet', 'atp_doubles_matches')
+#load_parquet_to_supabase('aggregated_matches_atp/atp_amateurs_matches.parquet', 'atp_amateurs_matches')
 
 #wta
 
-load_parquet_to_supabase('aggregated_matches_wta/wta_qualifiers_itf_matches.parquet', 'wta_qual_itf_matches')
+#load_parquet_to_supabase('aggregated_matches_wta/wta_qualifiers_itf_matches.parquet', 'wta_qual_itf_matches')
 #load_parquet_to_supabase('aggregated_matches_wta/wta_rankings.parquet', 'wta_rankings')
 #load_parquet_to_supabase('aggregated_matches_wta/wta_players.parquet', 'wta_players')
-load_parquet_to_supabase('aggregated_matches_wta/wta_singles_matches.parquet', 'wta_singles_matches')
+#load_parquet_to_supabase('aggregated_matches_wta/wta_singles_matches.parquet', 'wta_singles_matches')
 
 #local
-
-#load_parquets_to_postgres_local()
+load_parquets_to_postgres_local()
