@@ -34,3 +34,9 @@ se avete qulche consiglio siamo aperti a suggerimenti
 
 creare una colonna con turney name e date (se funziona sara la prossima turney_id) con un concat semplice
 Controllare i valori M allinizio di tourney name in match futures
+
+considerazioni creazione dashboard: per la creazione della dashboard abbiamo pensato di fare una prima pagina di presentazione 
+con i nomi dei partecipanti del gruppo e un 'glossario' dove mettere cio che si espone nelle varie pagine, poi 4 o 5 pagine dove si espongono 
+i vari tornei con i vari valori che abbiamo trovato, con possibilità di cambiare torneo tramite filtri, per finire con 2 o 3 pagine dove si parla di 
+un singolo giocatore, anche li con possibilità di intercambiare il giocatore con un apposito filtro, nel caso il professore voglia vedere un giocatore 
+preciso
