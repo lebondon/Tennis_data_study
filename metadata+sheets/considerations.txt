@@ -1,0 +1,42 @@
+dopo il 1990 le partite atp singles hanno più dati(anche se alcuni ancora mancanti a volte)
+prova
+
+controlla i missing nella tabella dei ranking, ce ne sono attorno ai 375000 e principalmente dovrebbero essere localizzati negli anni più arretrati
+
+wta non ha la tabella amateurs
+
+wta non ha le tabelle qual_chall ma al suo posto ha qual_itf
+
+i ranking della wta hanno una colonna in più "tours" guardare cosa significa
+
+
+
+errori:
+
+Error importing wta_matches_qual_itf_2015.csv: could not parse `�` as dtype `str` at column 'score' (column number 24)
+
+The current offset in the file is 3500749 bytes.
+
+You might want to try:
+- increasing `infer_schema_length` (e.g. `infer_schema_length=10000`),
+- specifying correct dtype with the `dtypes` argument
+- setting `ignore_errors` to `True`,
+- adding `�` to the `null_values` list.
+
+Original error: ```invalid utf-8 sequence```
+
+
+speriamo funzioni
+
+Considerazioni davide: abbiamo creato i df tornei, per creare un valore unico abbiamo fatto una unique sulle date,
+non è un modo molto pulito ma era lunico modo che ci era venuto in mente (anche perche farlo sui luoghi era insensato),
+se avete qulche consiglio siamo aperti a suggerimenti
+
+creare una colonna con turney name e date (se funziona sara la prossima turney_id) con un concat semplice
+Controllare i valori M allinizio di tourney name in match futures
+
+considerazioni creazione dashboard: per la creazione della dashboard abbiamo pensato di fare una prima pagina di presentazione 
+con i nomi dei partecipanti del gruppo e un 'glossario' dove mettere cio che si espone nelle varie pagine, poi 4 o 5 pagine dove si espongono 
+i vari tornei con i vari valori che abbiamo trovato, con possibilità di cambiare torneo tramite filtri, per finire con 2 o 3 pagine dove si parla di 
+un singolo giocatore, anche li con possibilità di intercambiare il giocatore con un apposito filtro, nel caso il professore voglia vedere un giocatore 
+preciso

@@ -1,0 +1,18 @@
+to create your virtual environment use this command     "python -m venv env"
+
+to activate your virtual environment use this command       windows: "env\Scripts\activate"
+linux:      "source env/bin/activate"  for linux and mac
+"env\Scripts\activate"       for windows
+
+to automatically add dependencies to requirements txt use the command     "pip freeze > requirements.txt"
+
+to install all the packages from requirements.txt use       "pip install -r requirements.txt"
+
+
+
+to use pytest simply call the command "pytest" in the directory where you keep your test folder.
+
+pytest search all the directories that contain the name test and will look for all the files with a specific notation:
+they need to have in their name "test_" or "_test.py" es: "test_example.py"
+
+the assert command is used to determine wether a statement is true or false, if the statement is true then the test passes else it fails

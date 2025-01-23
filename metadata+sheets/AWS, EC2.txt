@@ -1,0 +1,14 @@
+connecting to your EC2 instance via SSH
+
+linux/mac
+
+chmod 400 your-key.pem      #setting read only permission for your SSH keys for the owner
+
+# Then SSH into your instance
+ssh -i path/to/your-key.pem ubuntu@your-instance-public-ip
+
+
+
+windows/powershell:
+
+ssh -i path/to/your-key.pem ubuntu@your-instance-public-ip

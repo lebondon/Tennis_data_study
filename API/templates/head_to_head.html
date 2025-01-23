@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Head to Head{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h2 class="text-2xl font-bold text-center mb-6">Head to Head Comparison</h2>
+    
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="/head-to-head-results" class="space-y-6">
+        <!-- Player 1 Search -->
+        <div class="relative">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Player 1</label>
+            <input type="hidden" name="player1_id" id="player1_id" required>
+            <input type="hidden" name="player1_tour" id="player1_tour">
+            <input
+                type="text"
+                id="player1_search"
+                class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search for player..."
+                autocomplete="off"
+            >
+            <div id="player1_results" class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
+        </div>
+        
+        <!-- Player 2 Search -->
+        <div class="relative">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Player 2</label>
+            <input type="hidden" name="player2_id" id="player2_id" required>
+            <input type="hidden" name="player2_tour" id="player2_tour">
+            <input
+                type="text"
+                id="player2_search"
+                class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search for player..."
+                autocomplete="off"
+            >
+            <div id="player2_results" class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
+        </div>
+        
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+            Compare Players
+        </button>
+    </form>
+    
+    {% if player1 and player2 %}
+    <div class="mt-8 space-y-6">
+        <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+                <div class="text-xl font-semibold">{{ player1.name_full }}</div>
+                <div class="text-3xl font-bold mt-2">{{ p1_wins }}</div>
+                <div class="text-sm text-gray-600">Wins</div>
+            </div>
+            <div>
+                <div class="text-lg font-medium">Total Matches</div>
+                <div class="text-3xl font-bold mt-2">{{ total_matches }}</div>
+                <div class="text-sm text-gray-600">{{ tour }} Tour</div>
+            </div>
+            <div>
+                <div class="text-xl font-semibold">{{ player2.name_full }}</div>
+                <div class="text-3xl font-bold mt-2">{{ p2_wins }}</div>
+                <div class="text-sm text-gray-600">Wins</div>
+            </div>
+        </div>
+        
+        {% if matches %}
+        <div class="mt-8">
+            <h3 class="text-xl font-semibold mb-4">Match History</h3>
+            
+            <div class="text-sm text-gray-600 mb-4">
+                Showing matches {{ showing_matches.start }} to {{ showing_matches.end }} of {{ total_matches }}
+            </div>
+            
+            <div class="space-y-3">
+                {% for match in matches %}
+                <div class="bg-white p-4 rounded-lg shadow {% if match.winner_id == player1.player_id %}border-l-4 border-blue-500{% else %}border-l-4 border-red-500{% endif %}">
+                    <div class="font-medium">
+                        Winner: {{ match.winner_name }}
+                    </div>
+                    <div class="text-sm text-gray-600 mt-1">
+                        <div class="font-medium text-gray-800">{{ match.tournament_name }}</div>
+                        Score: {{ match.score }}
+                        {% if match.round %} | Round: {{ match.round }}{% endif %}
+                        {% if match.minutes %} | Duration: {{ match.minutes }} minutes{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if total_pages > 1 %}
+            <div class="mt-6 flex justify-center space-x-2">
+                {% if has_prev %}
+                <a href="/head-to-head-results?player1_id={{ player1.player_id }}&player2_id={{ player2.player_id }}&page={{ current_page - 1 }}"
+                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Previous
+                </a>
+                {% endif %}
+                
+                <span class="px-4 py-2 text-gray-700">
+                    Page {{ current_page }} of {{ total_pages }}
+                </span>
+                
+                {% if has_next %}
+                <a href="/head-to-head-results?player1_id={{ player1.player_id }}&player2_id={{ player2.player_id }}&page={{ current_page + 1 }}"
+                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Next
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    function setupPlayerSearch(searchInput, resultsDiv, hiddenIdInput, hiddenTourInput) {
+        let searchTimeout;
+        
+        $(searchInput).on('input', function() {
+            clearTimeout(searchTimeout);
+            const query = $(this).val();
+            
+            // Clear hidden inputs when search input is cleared
+            if (!query) {
+                $(hiddenIdInput).val('');
+                $(hiddenTourInput).val('');
+            }
+            
+            if (query.length < 2) {
+                $(resultsDiv).hide();
+                return;
+            }
+            
+            searchTimeout = setTimeout(function() {
+                $.ajax({
+                    url: '/search-players',
+                    method: 'GET',
+                    data: { query: query },
+                    success: function(data) {
+                        if (data && data.length > 0) {
+                            const resultsHtml = data.map(player => 
+                                `<div class="player-result p-2 hover:bg-gray-100 cursor-pointer" 
+                                      data-id="${player.id}" 
+                                      data-name="${player.name}"
+                                      data-tour="${player.tour}">
+                                    <div class="flex justify-between items-center">
+                                        <span>${player.name} ${player.country ? `(${player.country})` : ''}</span>
+                                        <span class="text-sm px-2 py-1 rounded ${player.tour === 'ATP' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'}">
+                                            ${player.tour}
+                                        </span>
+                                    </div>
+                                </div>`
+                            ).join('');
+                            
+                            $(resultsDiv).html(resultsHtml).show();
+                        } else {
+                            $(resultsDiv).html('<div class="p-2 text-gray-500">No players found</div>').show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Search error:', error);
+                        $(resultsDiv).hide();
+                    }
+                });
+            }, 300);
+        });
+        
+        $(resultsDiv).on('click', '.player-result', function() {
+            const playerId = $(this).data('id');
+            const playerName = $(this).data('name');
+            const playerTour = $(this).data('tour');
+            
+            $(hiddenIdInput).val(playerId);
+            $(hiddenTourInput).val(playerTour);
+            $(searchInput).val(playerName);
+            $(resultsDiv).hide();
+        });
+        
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest(searchInput).length && !$(e.target).closest(resultsDiv).length) {
+                $(resultsDiv).hide();
+            }
+        });
+    }
+    
+    setupPlayerSearch('#player1_search', '#player1_results', '#player1_id', '#player1_tour');
+    setupPlayerSearch('#player2_search', '#player2_results', '#player2_id', '#player2_tour');
+    
+    // Add form validation
+    $('form').on('submit', function(e) {
+        const player1Id = $('#player1_id').val();
+        const player2Id = $('#player2_id').val();
+        const player1Tour = $('#player1_tour').val();
+        const player2Tour = $('#player2_tour').val();
+        
+        if (!player1Id || !player2Id) {
+            e.preventDefault();
+            alert('Please select both players before comparing');
+            return false;
+        }
+        
+        if (player1Id === player2Id) {
+            e.preventDefault();
+            alert('Please select two different players');
+            return false;
+        }
+
+        if (player1Tour !== player2Tour) {
+            e.preventDefault();
+            alert('Players must be from the same tour (ATP or WTA)');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}
